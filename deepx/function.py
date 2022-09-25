@@ -21,4 +21,5 @@ class Function:
         raise NotImplementedError
 
     def get_params(self):
+        """Provides access to parameters of operators."""
         return []
