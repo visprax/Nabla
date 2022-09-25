@@ -48,5 +48,11 @@ connectivity, for example DropOut and DropConnect.
 
 TODO: A better and more intuitive explanation of regularization and L1-Norm, L2-Norm, BatchNorm, ...
 
+
+##### Back Propagation
+
+TODO: explanation using the computation graph (e.g. Wikipedia graph)
+
 #### References:
-- [Deep Learning Framework From Scratch Using Numpy.](https://arxiv.org/pdf/2011.08461.pdf)
+- [Deep Learning Framework From Scratch Using Numpy](https://arxiv.org/pdf/2011.08461.pdf)
+- [Implementing a Deep Learning Library from Scratch](https://www.kdnuggets.com/2020/09/implementing-deep-learning-library-scratch-python.html)
