@@ -1,6 +1,6 @@
 import numpy as np
 
-from functions import Function
+from function import Function
 from tensor import Tensor
 
 class Linear(Function):
