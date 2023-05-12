@@ -52,6 +52,7 @@ TODO: A better and more intuitive explanation of regularization and L1-Norm, L2-
 ##### Back Propagation
 
 TODO: explanation using the computation graph (e.g. Wikipedia graph)
+TODO: the visualization of the net using e.g. graphviz
 
 #### References:
 - [Deep Learning Framework From Scratch Using Numpy](https://arxiv.org/pdf/2011.08461.pdf)
