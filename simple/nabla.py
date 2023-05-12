@@ -1,5 +1,5 @@
 # The simple version of Nabla augrad engine
-import numpy as np
+import math
 
 class Scalar:
     def __init__(self, value, _parents=(), _operation="", _label=""):
@@ -21,9 +21,23 @@ class Scalar:
         return f"Scalar(value={self.value}, grad={self.grad}, label={self._label})"
 
     def __add__(self, other):
-        """Rule for adding two Scalar objects."""
+        """Addition operator overload."""
         other = Scalar._check_instance(other)
         output = Scalar(self.value + other.value, (self, other), "PLUS", "")
+        
+        # calculate the local gradient wrt. loss in an addition node
+        # output = self + other
+        # dL/dself  = dL/doutput * doutput/dself  = output.grad * 1
+        # dL/dother = dL/doutput * doutput/dother = output.grad * 1
+        def _backward():
+            # note the += and not a =, this is necessary to accumlate gradients
+            # for the same scalars as an input, this will in turn will require 
+            # that we zero out all the gradients after each backward pass, before 
+            # we can do another backward pass
+            self.grad  += output.grad * 1.0
+            other.grad += output.grad * 1.0
+        # set the backpropagation function for addition nodes
+        output._backward = _backward
         return output
 
     def __radd__(self, other):
@@ -32,9 +46,18 @@ class Scalar:
         return self + other
 
     def __mul__(self, other):
-        """Rule for multiplying two Scalar objects."""
+        """Multiplication operator overload."""
         other = Scalar._check_instance(other)
         output = Scalar(self.value * other.value, (self, other), "MUL", "")
+        def _backward():
+            # calculate the local gradient wrt. loss in a multiplication node
+            # output = self * other
+            # dL/dself  = dL/doutput * doutput/dself  = output.grad * other.value
+            # dL/dother = dL/doutput * doutput/dother = output.grad * self.value
+            self.grad  += output.grad * other.value
+            other.grad += output.grad * self.value
+        # set the backpropagation function for multiplication nodes
+        output._backward = _backward
         return output
 
     def __rmul__(self, other):
@@ -43,12 +66,20 @@ class Scalar:
         return self * other
 
     def __pow__(self, other):
-        """Rule for an Scalar to the power of a number."""
+        """Power operator overload."""
         other = Scalar._check_instance(other)
         output = Scalar(self.value ** other.value, (self, other), "POW", "")
+        def _backward():
+            # calculate the local gradient wrt. loss in a power node
+            # output = self ** other
+            # dL/self = dL/doutput * doutput/dself = output.grad * other * self ** (other-1)
+            self.grad += output.grad * other.value * self.value ** (other.value -1)
+        # set the backpropagation function for power nodes
+        output._backward = _bakward
         return output
 
-    # TODO: this needs testing, weird behaviour
+    # TODO: this needs testing, weird behaviour, also the backward function, maybe not the same?!
+    # maybe we have to get rid of this altogether
     def __rpow__(self, other):
         """Override reverse __pow__ magic method."""
         other = Scalar._check_instance(other)
@@ -57,7 +88,7 @@ class Scalar:
         return output
 
     def __truediv__(self, other):
-        """Rule for division. __div__ is for floor division."""
+        """True division (as opposed to floor division __div__) operator overload."""
         other = Scalar._check_instance(other)
         return self * other ** -1
 
@@ -67,14 +98,57 @@ class Scalar:
         return other * self ** -1
 
     def __sub__(self, other):
-        """Rule for subtracting Scalar objects."""
+        """Subtraction operator overload."""
         other = Scalar._check_instance(other)
         return self + (-other)
 
     def __neg__(self):
         """Rule for negating an Scalar."""
         return self * -1
+    
+    def exp(self):
+        """Exponantiation operator for Scalars."""
+        output = Scalar(math.exp(self.value), (self,), "EXP", "")
+        def _backward():
+            # calculate the local gradient wrt. loss in an exponantiation node
+            # output = exp(self)
+            # dL/self = dL/doutput * doutput/dself = output.grad * exp(self)
+            self.grad += output.grad * output.value
+        # set the backpropagation function for exponantiation nodes
+        output._backward = _bakward
+        return output
 
+    def tanh(self):
+        """Hyperbolic tangent function for Scalars."""
+        output = Scalar(math.tanh(self.value), (self,), "TANH", "")
+        def _backward():
+            # calculate the local gradient wrt. loss in an tanh node
+            # output = tanh(self)
+            # dL/self = dL/doutput * doutput/dself = output.grad * (1 - tanh(self)**2)
+            self.grad += output.grad * (1 - math.tanh(self.value)**2)
+        # set the backpropagation function for tanh nodes
+        output._backward = _bakward
+
+    def backward(self):
+        """Backpropagation function.
+
+        This method first sorts the computational graph so that all 
+        the nodes flow from left to right, since the backpropagation 
+        has to be done from final result, e.g. loss function to the 
+        starting nodes.
+        """
+        nodes = []
+        visited = set()
+        def tree_walk():
+            if node not in visited:
+                visited.add(node)
+                for child in node.__prev:
+                    tree_walk(child)
+                nodes.append(node)
+        tree_walk(self)
+        self.grad = 1.0
+        for node in reversed(nodes):
+            node._backward()
 
     # TODO: check this method!
     def _check_instance(other):
@@ -83,11 +157,6 @@ class Scalar:
         # if the other object is an int or float instance, convert it to an Scalar object
         if not isinstance(other, Scalar):
             other = Scalar(other)
-
         return other
-
-
-
-
 
 
