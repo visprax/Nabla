@@ -1,5 +1,6 @@
 # The simple version of Nabla augrad engine
 import math
+import random
 
 class Scalar:
     def __init__(self, value, _parents=(), _operation="", _label=""):
@@ -159,4 +160,51 @@ class Scalar:
             other = Scalar(other)
         return other
 
+class Neuron:
+    def __init__(self, num_in):
+        # num_in: the number of inputs to the neuron
+        self.w = [Scalar(random.uniform(-1, 1)) for _ in range(num_in)]
+        self.b = Scalar(random.uniform(-1, 1))
+
+    def __call__(self, x):
+        """Forward pass of the neuron. Perform Neuron(w*x+b)."""
+        activation = sum(wi*xi for wi, xi in zip(self.w, x)) + self.b
+        ouput = activation.tanh()
+        return output
+
+    def parameters(self):
+        """Return weights and bias of the neuron."""
+        return self.w + [self.b]
+
+
+class Layer:
+    def __init__(self, num_in, num_out):
+        # num_in:  number of inputs to a single Neuron
+        # num_out: how many Neurons are in a Layer
+        self.neurons = [Neuron(num_in) for _ in range(num_out)]
+
+    def __call__(self, x):
+        outputs = [n(x) for n in self.neurons]
+        # if there is only one neuron output don't return a list
+        return outputs[0] if len(outputs) == 1 else outputs
+
+    def parameters(self):
+        """Return parameters of all the neurons in the layer."""
+        return [p for n in self.neurons for p in n.parameters()]
+
+
+class MLP:
+    def __init__(self, num_in, num_out):
+        # num_in:  number of inputs to a single Neuron
+        # num_out: the dimension of the layers in the multi-layer perceptron
+        size = [num_in] + num_out
+        self.layers = [Layer(size[i], size[i+1]) for i in range(len(num_out))]
+
+    def __call__(self, x):
+        for layer in self.layers:
+            x = layer(x)
+        return x
+
+    def parameters(self):
+        return [p for l in self.layers for p in l.parameters()]
 
