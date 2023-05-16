@@ -1,7 +1,5 @@
 """Provides Function abstract class as an interface for operators."""
 
-from nabla.tensor import Tensor
-
 class Function:
     """All operators are implemented by inheriting Function class.
 
@@ -28,3 +26,7 @@ class Function:
         """Provides access to parameters of operators."""
         raise NotImplementedError(f"get_params method not implemented for {type(self)}")
 
+
+class Add(Function):
+    def forward(self, other):
+        return self.data + other.data

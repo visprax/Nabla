@@ -1,5 +1,6 @@
-# TODO: remove numpy dependency!
 import numpy as np
+from nabla.function import Add
+from nabla.ops import Ops
 
 class Tensor:
     def __init__(self, data, dtype=None, requires_grad=None):
@@ -17,3 +18,12 @@ class Tensor:
     @property
     def dtype(self):
         return self.data.dtype
+
+    def __add__(self, other):
+        return self._apply(Ops.ADD, other)
+
+    def _apply(self, op, other):
+        if op == Ops.ADD:
+            out = Add.forward(self, other)
+        return out
+

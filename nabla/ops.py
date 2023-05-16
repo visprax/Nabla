@@ -1,7 +1,4 @@
-from nabla.function import Function
-from nabla.tensor import Tensor
+from enum import Enum
 
-
-class Add(Function):
-    def forward(self, x, y):
-        return x + y
+class Ops(Enum):
+    ADD = 0
