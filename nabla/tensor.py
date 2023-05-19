@@ -2,6 +2,7 @@ import numpy as np
 
 class Tensor:
     _default_type = np.float32
+
     def __init__(self, data, dtype=None, _parents=(), _label=None, _op=None, requires_grad=None):
         self.data = data
         self.dtype = dtype if dtype else Tensor._default_type
@@ -21,3 +22,19 @@ class Tensor:
 
     def __radd__(self, other):
         return self + other
+
+    def __mul__(self, other):
+        result = self.data * other.data
+        output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MUL")
+        return output
+
+    def __rmul__(self, other):
+        return self * other
+
+    def __matmul__(self, other):
+        result = self.data @ other.data
+        output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MATMUL")
+        return output
+
+    def __rmatmul__(self, other):
+        return self @ other
