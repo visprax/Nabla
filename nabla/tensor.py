@@ -5,8 +5,12 @@ class Tensor:
     _default_type = np.float32
 
     def __init__(self, data, dtype=None, _parents=(), _label=None, _op=None, requires_grad=None):
-        self.data = data
-        self.dtype = dtype if dtype else Tensor._default_type
+        if isinstance(data, list):
+            self.data = np.array(data, dtype=dtype if dtype is not None else Tensor._default_type)
+        elif isinstance(data, np.ndarray):
+            self.data = data.astype(dtype if dtype is not None else data.dtype)
+        else:
+            raise RuntimeError(f"can't init Tensor from {type(data)}")
         self._parents = set(_parents)
         self._label = _label
         self._op = _op
@@ -35,5 +39,5 @@ class Tensor:
         return ops.MatMul.apply(other, self, _op=ops.OpCodes.MATMUL)
 
     def exp(self):
-        return ops.Exp.apply(self)
+        return ops.Exp.apply(self, _op=ops.OpCodes.EXP)
 
