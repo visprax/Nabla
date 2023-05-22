@@ -1,5 +1,6 @@
-# deepX
-A simple autograd engine with neural nets build on top of it.
+# Nabla
+A simple autograd engine with neural nets build on top of it. For something in between [micrograd](https://github.com/karpathy/micrograd) 
+and [tinygrad](https://github.com/geohot/tinygrad).
 
 ### Components
 
