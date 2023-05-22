@@ -17,25 +17,22 @@ class Tensor:
         return f"<Tensor data={self.data} label={self._label} grad={self.grad} parents={self._parents} op={self._op} requires_grad={self.requires_grad}>"
 
     def __add__(self, other):
-        return ops.Add.apply(self, other, _op=ops.Ops.ADD)
+        return ops.Add.apply(self, other, _op=ops.OpCodes.ADD)
 
     def __radd__(self, other):
-        return ops.Add.apply(other, self, _op=ops.Ops.ADD)
+        return ops.Add.apply(other, self, _op=ops.OpCodes.ADD)
 
     def __mul__(self, other):
-        return ops.Mul.apply(self, other, _op=ops.Ops.MUL)
+        return ops.Mul.apply(self, other, _op=ops.OpCodes.MUL)
 
     def __rmul__(self, other):
-        return ops.Mul.apply(other, self, _op=ops.Ops.MUL)
+        return ops.Mul.apply(other, self, _op=ops.OpCodes.MUL)
 
     def __matmul__(self, other):
-        # result = self.data @ other.data
-        # output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MATMUL")
-        # return output
-        return ops.MatMul.apply(self, other, _op=ops.Ops.MATMUL)
+        return ops.MatMul.apply(self, other, _op=ops.OpCodes.MATMUL)
 
     def __rmatmul__(self, other):
-        return ops.MatMul.apply(other, self, _op=ops.Ops.MATMUL)
+        return ops.MatMul.apply(other, self, _op=ops.OpCodes.MATMUL)
 
     def exp(self):
         return ops.Exp.apply(self)
