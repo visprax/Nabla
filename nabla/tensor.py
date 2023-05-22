@@ -1,4 +1,5 @@
 import numpy as np
+from nabla import ops
 
 class Tensor:
     _default_type = np.float32
@@ -38,3 +39,7 @@ class Tensor:
 
     def __rmatmul__(self, other):
         return self @ other
+
+    def exp(self):
+        return ops.Exp.apply(self)
+
