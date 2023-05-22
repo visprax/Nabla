@@ -20,23 +20,22 @@ class Tensor:
         return ops.Add.apply(self, other, _op=ops.Ops.ADD)
 
     def __radd__(self, other):
-        return self + other
+        return ops.Add.apply(other, self, _op=ops.Ops.ADD)
 
     def __mul__(self, other):
-        result = self.data * other.data
-        output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MUL")
-        return output
+        return ops.Mul.apply(self, other, _op=ops.Ops.MUL)
 
     def __rmul__(self, other):
-        return self * other
+        return ops.Mul.apply(other, self, _op=ops.Ops.MUL)
 
     def __matmul__(self, other):
-        result = self.data @ other.data
-        output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MATMUL")
-        return output
+        # result = self.data @ other.data
+        # output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="MATMUL")
+        # return output
+        return ops.MatMul.apply(self, other, _op=ops.Ops.MATMUL)
 
     def __rmatmul__(self, other):
-        return self @ other
+        return ops.MatMul.apply(other, self, _op=ops.Ops.MATMUL)
 
     def exp(self):
         return ops.Exp.apply(self)
