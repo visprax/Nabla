@@ -1,5 +1,11 @@
 import numpy as np
+from enum import Enum, auto
 from nabla import tensor
+
+class Ops(Enum):
+    ADD = auto()
+    MUL = auto()
+    EXP = auto()
 
 class Function:
     def __init__(self, *tensors):
@@ -12,12 +18,15 @@ class Function:
         raise NotImplementedError(f"backward method not implemented")
 
     @classmethod
-    def apply(func, *tensors):
+    def apply(func, *tensors, **kwargs):
         op = func(*tensors)
-        result = tensor.Tensor(op.forward(*[t.data for t in tensors]))
+        result = tensor.Tensor(op.forward(*[t.data for t in tensors]), _parents=op.parents, **kwargs)
         return result
+
+class Add(Function):
+    def forward(self, x, y):
+        return x + y
 
 class Exp(Function):
     def forward(self, x):
-        result = np.exp(x)
-        return result
+        return np.exp(x)
