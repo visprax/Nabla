@@ -3,9 +3,10 @@ from enum import Enum, auto
 from nabla import tensor
 
 class Ops(Enum):
-    ADD = auto()
-    MUL = auto()
-    EXP = auto()
+    ADD    = auto()
+    MUL    = auto()
+    MATMUL = auto()
+    EXP    = auto()
 
 class Function:
     def __init__(self, *tensors):
@@ -26,6 +27,14 @@ class Function:
 class Add(Function):
     def forward(self, x, y):
         return x + y
+
+class Mul(Function):
+    def forward(self, x, y):
+        return x * y
+
+class MatMul(Function):
+    def forward(self, x, y):
+        return x @ y
 
 class Exp(Function):
     def forward(self, x):
