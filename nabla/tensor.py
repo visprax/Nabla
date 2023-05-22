@@ -17,9 +17,7 @@ class Tensor:
         return f"<Tensor data={self.data} label={self._label} grad={self.grad} parents={self._parents} op={self._op} requires_grad={self.requires_grad}>"
 
     def __add__(self, other):
-        result = self.data + other.data
-        output = Tensor(result, dtype=result.dtype, _parents=(self, other), _op="ADD")
-        return output
+        return ops.Add.apply(self, other, _op=ops.Ops.ADD)
 
     def __radd__(self, other):
         return self + other
