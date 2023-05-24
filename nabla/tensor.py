@@ -34,6 +34,16 @@ class Tensor:
             other = Tensor(other)
         return ops.Add.apply(other, self, _op=ops.OpCodes.ADD)
 
+    def __sub__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+        return ops.Sub.apply(self, other, _op=ops.OpCodes.SUB)
+
+    def __rsub__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+        return ops.Sub.apply(other, self, _op=ops.OpCodes.SUB)
+
     def __mul__(self, other):
         if not isinstance(other, Tensor):
             other = Tensor(other)
@@ -43,6 +53,16 @@ class Tensor:
         if not isinstance(other, Tensor):
             other = Tensor(other)
         return ops.Mul.apply(other, self, _op=ops.OpCodes.MUL)
+
+    def __truediv__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+        return ops.Truediv.apply(self, other, _op=ops.OpCodes.TRUEDIV)
+
+    def __rtruediv__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+        return ops.Truediv.apply(other, self, _op=ops.OpCodes.TRUEDIV)
 
     def __matmul__(self, other):
         if not isinstance(other, Tensor):
@@ -58,6 +78,14 @@ class Tensor:
         if not isinstance(other, Tensor):
             other = Tensor(other)
         return ops.Pow.apply(self, other, _op=ops.OpCodes.POW)
+
+    def __rpow__(self, other):
+        if not isinstance(other, Tensor):
+            other = Tensor(other)
+        return ops.Pow.apply(other, self, _op=ops.OpCodes.POW)
+
+    def __neg__(self):
+        return ops.Neg.apply(self, _op=ops.OpCodes.NEG)
 
     def exp(self):
         return ops.Exp.apply(self, _op=ops.OpCodes.EXP)

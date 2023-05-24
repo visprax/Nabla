@@ -3,19 +3,34 @@ from enum import Enum, auto
 from nabla.function import Function
 
 class OpCodes(Enum):
-    ADD    = auto()
-    MUL    = auto()
-    MATMUL = auto()
-    POW    = auto()
-    EXP    = auto()
+    ADD     = auto()
+    SUB     = auto()
+    NEG     = auto()
+    MUL     = auto()
+    TRUEDIV = auto()
+    MATMUL  = auto()
+    POW     = auto()
+    EXP     = auto()
 
 class Add(Function):
     def forward(self, x, y):
         return x + y
 
+class Sub(Function):
+    def forward(self, x, y):
+        return x - y
+
+class Neg(Function):
+    def forward(self, x):
+        return -x
+
 class Mul(Function):
     def forward(self, x, y):
         return x * y
+
+class Truediv(Function):
+    def forward(self, x, y):
+        return x / y
 
 class MatMul(Function):
     def forward(self, x, y):
