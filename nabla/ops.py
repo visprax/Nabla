@@ -6,6 +6,7 @@ class OpCodes(Enum):
     ADD    = auto()
     MUL    = auto()
     MATMUL = auto()
+    POW    = auto()
     EXP    = auto()
 
 class Add(Function):
@@ -19,6 +20,10 @@ class Mul(Function):
 class MatMul(Function):
     def forward(self, x, y):
         return x @ y
+
+class Pow(Function):
+    def forward(self, x, y):
+        return x ** y
 
 class Exp(Function):
     def forward(self, x):
