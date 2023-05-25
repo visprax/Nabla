@@ -11,6 +11,8 @@ class OpCodes(Enum):
     MATMUL  = auto()
     POW     = auto()
     EXP     = auto()
+    TANH    = auto()
+    EQUAL   = auto()
 
 class Add(Function):
     def forward(self, x, y):
@@ -43,3 +45,11 @@ class Pow(Function):
 class Exp(Function):
     def forward(self, x):
         return np.exp(x)
+
+class Tanh(Function):
+    def forward(self, x):
+        return np.tanh(x)
+
+class Equal(Function):
+    def forward(self, x, y):
+        return x == y

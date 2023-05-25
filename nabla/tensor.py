@@ -87,6 +87,12 @@ class Tensor:
     def __neg__(self):
         return ops.Neg.apply(self, _op=ops.OpCodes.NEG)
 
+    def __eq__(self, other):
+        return ops.Equal.apply(self, other, _op=ops.OpCodes.EQUAL)
+
     def exp(self):
         return ops.Exp.apply(self, _op=ops.OpCodes.EXP)
+
+    def tanh(self):
+        return ops.Tanh.apply(self, _op=ops.OpCodes.TANH)
 
