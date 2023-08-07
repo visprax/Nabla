@@ -46,6 +46,8 @@ class Exp(Function):
     def forward(self, x):
         return np.exp(x)
 
+    def backward(self, )
+
 class Tanh(Function):
     def forward(self, x):
         return np.tanh(x)

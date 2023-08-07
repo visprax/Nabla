@@ -1,3 +1,4 @@
+import numpy as np
 from nabla import tensor
 
 class Function:

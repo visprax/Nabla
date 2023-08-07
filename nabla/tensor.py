@@ -14,7 +14,7 @@ class Tensor:
             self.data = data.astype(dtype if dtype is not None else data.dtype)
         else:
             raise RuntimeError(f"can't init Tensor from {type(data)}")
-        self._parents = set(_parents)
+        self._parents = list(_parents)
         self._label = _label
         self._op = _op
         self.requires_grad = requires_grad
@@ -25,13 +25,13 @@ class Tensor:
 
     # TODO: fix repetitive instance checks!
     def __add__(self, other):
-        if not isinstance(other, Tensor):
-            other = Tensor(other)
+        # if not isinstance(other, Tensor):
+            # other = Tensor(other)
         return ops.Add.apply(self, other, _op=ops.OpCodes.ADD)
 
     def __radd__(self, other):
-        if not isinstance(other, Tensor):
-            other = Tensor(other)
+        # if not isinstance(other, Tensor):
+            # other = Tensor(other)
         return ops.Add.apply(other, self, _op=ops.OpCodes.ADD)
 
     def __sub__(self, other):
