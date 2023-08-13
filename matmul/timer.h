@@ -17,6 +17,7 @@
 #       define CLOCKID CLOCK_MONOTONIC
 #   else
 #       define CLOCKID CLOCK_REALTIME
+#   endif
 
 #elif defined(__APPLE__)
 #   define HAVE_MACH_TIMER
