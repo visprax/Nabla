@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <inttypes.h>
 #include <omp.h>
-#include <gsl/gsl_blas.h>
+#include <cblas.h>
 
 #include "timer.h"
 
@@ -48,7 +48,7 @@ void print_mat(double* mat, size_t n) {
     printf("%.1f  %.1f\n", mat[n*n-2], mat[n*n-1]);
 }
 
-void matmul_naive() {
+void naive_matmul() {
     double* A = (double*)malloc(N * N * sizeof(double));
     double* B = (double*)malloc(N * N * sizeof(double));
     double* C = (double*)malloc(N * N * sizeof(double));
@@ -79,26 +79,25 @@ void matmul_naive() {
     free(C);
 }
 
-void gsl_matmul() {
-    gsl_matrix* A = gsl_matrix_alloc(N, N);
-    gsl_matrix* B = gsl_matrix_alloc(N, N);
-    gsl_matrix* C = gsl_matrix_alloc(N, N);
+void blas_matmul() {
+    double* A = (double*)malloc(N * N * sizeof(double));
+    double* B = (double*)malloc(N * N * sizeof(double));
+    double* C = (double*)malloc(N * N * sizeof(double));
 
-    gsl_matrix_set_all(A, 1.0);
-    gsl_matrix_set_all(B, 2.0);
-    gsl_matrix_set_all(C, 0.0);
+    init_mat(A, N, 1.0);
+    init_mat(B, N, 2.0);
+    init_mat(C, N, 0.0);
 
     uint64_t start = get_nsecs();
-    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, A, B, 0.0, C);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0, A, N, B, N, 0.0, C, N);
     uint64_t end = get_nsecs();
     uint64_t diff = end - start;
     printf("%" PRIu64 "ms\n", diff / 1000000);
 
     print_mat(C, N);
-
-    gsl_matrix_free(A);
-    gsl_matrix_free(B);
-    gsl_matrix_free(C);
+    free(A);
+    free(B);
+    free(C);
 }
 
 int main() {
@@ -106,8 +105,9 @@ int main() {
     omp_set_dynamic(0);
     omp_set_num_threads(4);
 
-    matmul_naive();
-    gsl_matmul();
+    naive_matmul();
+    /*gsl_matmul();*/
+    blas_matmul();
 
     return 0;
 }
