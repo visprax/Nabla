@@ -1,14 +1,9 @@
 import numpy as np
 
-def asarray(vals, *args, **kwargs):
-    """Gradient supporting autograd asarray"""
-    if isinstance(vals, np.ndarray):
-        return np.asarray(vals, *args, **kwargs)
-    return np.array(vals, *args, **kwargs)
 
-class tensor(np.ndarray):
+class Tensor(np.ndarray):
     def __new__(cls, input_array, *args, requires_grad=True, **kwargs):
-        obj = asarray(input_array, *args, **kwargs)
+        obj = Tensor._asarray(input_array, *args, **kwargs)
 
         if isinstance(obj, np.ndarray):
             obj = obj.view(cls)
@@ -28,7 +23,7 @@ class tensor(np.ndarray):
         return string[:-1] + f", requires_grad={self.requires_grad})"
 
     def __array_wrap__(self, obj):
-        out_arr = tensor(obj, requires_grad=self.requires_grad)
+        out_arr = Tensor(obj, requires_grad=self.requires_grad)
         return super().__array_wrap__(out_arr)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
@@ -71,7 +66,7 @@ class tensor(np.ndarray):
         # Iterate through the ufunc outputs and convert each to a PennyLane tensor.
         # We also correctly set the requires_grad attribute.
         for i in range(len(ufunc_output)):  # pylint: disable=consider-using-enumerate
-            ufunc_output[i] = tensor(ufunc_output[i], requires_grad=requires_grad)
+            ufunc_output[i] = Tensor(ufunc_output[i], requires_grad=requires_grad)
 
         if len(ufunc_output) == 1:
             # the ufunc has a single output so return a single tensor
@@ -83,8 +78,8 @@ class tensor(np.ndarray):
     def __getitem__(self, *args, **kwargs):
         item = super().__getitem__(*args, **kwargs)
 
-        if not isinstance(item, tensor):
-            item = tensor(item, requires_grad=self.requires_grad)
+        if not isinstance(item, Tensor):
+            item = Tensor(item, requires_grad=self.requires_grad)
 
         return item
 
@@ -124,3 +119,9 @@ class tensor(np.ndarray):
     def numpy(self):
         return self.unwrap()
 
+    @staticmethod
+    def _asarray(vals, *args, **kwargs):
+        """Gradient supporting autograd asarray"""
+        if isinstance(vals, np.ndarray):
+            return np.asarray(vals, *args, **kwargs)
+        return np.array(vals, *args, **kwargs)
